@@ -1,0 +1,122 @@
+global DEBUG = false;
+
+function getMyDistance(target){
+	var cell = getCell(target);
+	if(cell != null)
+		return getDistance(getCell(), cell);
+	else
+		return 10000;
+}
+
+function attack(target, count){
+	for(var i = 0; i < count; i++)
+		useWeapon(target);
+}
+function attackAll(target, weapon){
+	if(DEBUG)
+		debug("attackAll");
+	attack(target, getTP() / getWeaponCost(weapon));
+}
+
+function chipIt(target, chip, count){
+	for(var i = 0; i < count; i++)
+		useChip(chip, target);
+}
+
+function chipItAll(target, chip){
+	if(DEBUG)
+		debug("chipItAll");
+	chipIt(target, chip, getTP() / getChipCost(chip));
+}
+
+function autoHeal(target, healer, heal){
+	if(DEBUG)
+		debug("autoHeal");
+	if(getTotalLife(target) - getLife(target) > heal)
+		useChip(healer, target);
+}
+
+function autoShield(target, shield, distance){
+	if(DEBUG)
+		debug("autoShield");
+	if(getMyDistance(getNearestEnemy()) < distance)
+		useChip(shield, target);
+}
+
+function moveToRange(target, weapon){
+	var maxDistance = getWeaponMaxRange(weapon);
+	var minDistance = getWeaponMinRange(weapon);
+	var distance = getMyDistance(target);
+	if(distance < minDistance){
+		if(DEBUG)
+			debug("moveAway");
+		while(minDistance > distance && canUseWeapon(target) && getMP() > 1){
+			moveAwayFrom(target, 1);
+			distance = getMyDistance(target);
+		}
+		if(!canUseWeapon(target))
+			moveToward(target);
+	}else{
+		if(DEBUG)
+			debug("moveToward");
+		while((distance > maxDistance || (!canUseWeapon(target) && distance > minDistance)) && getMP() > 0 && distance > 1){
+			moveToward(target, 1);
+			distance = getMyDistance(target);
+		}
+	}
+}
+
+function moveBackRange(target, weapon){
+	if(DEBUG)
+		debug("moveBack");
+	var maxDistance = getWeaponMaxRange(weapon);
+	var distance = getMyDistance(target);
+	while(distance < maxDistance && getMP() > 0)
+		moveAwayFrom(target, 1);
+}
+
+function setup(weapon){
+	if(getWeapon() != weapon){
+		setWeapon(weapon);
+		say("WADZA !!!");
+	}
+}
+
+function getTarget(){
+	var enemies = getAliveEnemies();
+	var target;
+	var targetValue = 100000000;
+
+	for(var i = 0; i < count(enemies); i++){
+		var currentValue = getLife(enemies[i]) * getMyDistance(enemies[i]);
+		if(currentValue > 0 && currentValue < targetValue){
+			currentValue = targetValue;
+			target = enemies[i];
+		}
+	}
+	if(target == null)
+		 target = getNearestEnemy();
+	
+	return target;
+}
+
+function finish(target){
+	if(DEBUG){
+		debug("LP:" + getLife() + " TP:" + getTP() + " MP:" + getMP());
+		debug("Target:" + getName(target) + " Weapon:" + getWeaponName(getWeapon()));
+	}
+}
+
+//----- Exemple -----//
+//TODO manage cac weapon and chips
+/*var weapon = WEAPON_PISTOL;
+setup(weapon);
+var target = getTarget();
+if(target != null){
+	moveToRange(target, weapon);
+	attackAll(target);
+	moveBackRange(target, weapon);
+}else{
+	say("Mais ils sont où ???");
+}
+finish();*/
