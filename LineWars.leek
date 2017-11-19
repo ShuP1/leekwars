@@ -15,7 +15,7 @@ var final = CHIP_PEBBLE;
 var target = getTarget();
 var me = getLeek();
 var weapon = setup(secondWeapon);
-if(target != null){
+if (target != null) {
 	moveToRange(target, mainWeapon);
 	weapon = autoSwitch(target, [mainWeapon, secondWeapon]);
 	attackAll(target, weapon);
@@ -25,6 +25,6 @@ if(target != null){
 	chipItAll(target, final);
 	moveBackRange(target, weapon);
 	finish(target);
-}else{
+} else {
 	say("Mais ils sont où ???");
 }

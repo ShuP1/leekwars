@@ -9,7 +9,7 @@ var final = CHIP_PEBBLE;
 var target = getTarget();
 var me = getLeek();
 setup(weapon);
-if(target != null){
+if (target != null) {
 	moveToRange(target, weapon);
 	attackAll(target, weapon);
 	autoHeal(me, healer, 20);
@@ -18,6 +18,6 @@ if(target != null){
 	chipItAll(target, final);
 	moveBackRange(target, weapon);
 	finish(target);
-}else{
+} else {
 	say("Mais ils sont où ???");
 }
