@@ -36,6 +36,23 @@ function autoHeal(target, healer, heal){
 		useChip(healer, target);
 }
 
+function autoHealer(healer, heal){
+	if(DEBUG)
+		debug("autoHealer");
+	var allies = getAliveAllies();
+	var target;
+	var targetScore = 0;
+	for(var i = 0; i < count(allies); i++){
+		var score = getTotalLife(allies[i]) - getLife(allies[i]);
+		if(score > targetScore && canUseChip(healer, allies[i])){
+			target = allies[i];
+			targetScore = score;
+		}
+	}
+	if(target != null)
+		useChip(healer, target);
+}
+
 function autoShield(target, shield, distance){
 	if(DEBUG)
 		debug("autoShield");
@@ -43,10 +60,24 @@ function autoShield(target, shield, distance){
 		useChip(shield, target);
 }
 
+function autoSwitch(target, weapons){
+	if(DEBUG)
+		debug("autoSwitch");
+	for(var i = 0; i < count(weapons); i++){
+		if(canUseWeapon(weapons[i], target)){
+			if(weapons[i] != getWeapon())
+				setWeapon(weapons[i]);
+			break;
+		}
+	}
+}
+
 function moveToRange(target, weapon){
 	var maxDistance = getWeaponMaxRange(weapon);
 	var minDistance = getWeaponMinRange(weapon);
 	var distance = getMyDistance(target);
+	
+	var inline = isInlineWeapon(weapon);
 	if(distance < minDistance){
 		if(DEBUG)
 			debug("moveAway");
@@ -55,12 +86,34 @@ function moveToRange(target, weapon){
 			distance = getMyDistance(target);
 		}
 		if(!canUseWeapon(target))
-			moveToward(target);
+			moveToward(target, 1);
 	}else{
 		if(DEBUG)
 			debug("moveToward");
 		while((distance > maxDistance || (!canUseWeapon(target) && distance > minDistance)) && getMP() > 0 && distance > 1){
-			moveToward(target, 1);
+			if(inline && distance <= maxDistance){
+				if(DEBUG)
+					debug("moveInline");
+				var myCell = getCell();
+				var targetCell = getCell(target);
+				var x = getCellX(myCell);
+				var y = getCellY(myCell);
+				var tx = getCellX(targetCell);
+				var ty = getCellY(targetCell);
+				var dx = abs(x-tx);
+				var dy = abs(y-ty);
+				if(x != tx || y != ty || dx == dy){
+					var rangeCell = targetCell;
+					if(dx > dy)
+						rangeCell = getCellFromXY(tx + maxDistance * (x > tx ? 1 : -1), ty);
+					else
+						rangeCell = getCellFromXY(tx, ty + maxDistance * (y > ty ? 1 : -1));
+					
+					moveTowardLine(targetCell, rangeCell, 1);
+				}else
+					moveToward(target, 1);
+			}else
+				moveToward(target, 1);
 			distance = getMyDistance(target);
 		}
 	}
@@ -76,9 +129,13 @@ function moveBackRange(target, weapon){
 }
 
 function setup(weapon){
-	if(getWeapon() != weapon){
+	var current = getWeapon();
+	if(current == null){
 		setWeapon(weapon);
 		say("WADZA !!!");
+		return weapon;
+	}else{
+		return current;
 	}
 }
 

@@ -1,0 +1,30 @@
+include("Main");
+
+//Weapons
+var secondWeapon = WEAPON_DOUBLE_GUN;
+var mainWeapon = WEAPON_SHOTGUN;
+
+//Chips
+var healer = CHIP_BANDAGE;
+var healerPower = 20;
+var shield = CHIP_HELMET;
+var shieldDistance = 10;
+var distance = CHIP_SPARK;
+var final = CHIP_PEBBLE;
+
+var target = getTarget();
+var me = getLeek();
+var weapon = setup(secondWeapon);
+if(target != null){
+	moveToRange(target, mainWeapon);
+	weapon = autoSwitch(target, [mainWeapon, secondWeapon]);
+	attackAll(target, weapon);
+	autoShield(me, shield, shieldDistance);
+	autoHealer(healer, healerPower);
+	chipItAll(target, distance);
+	chipItAll(target, final);
+	moveBackRange(target, weapon);
+	finish(target);
+}else{
+	say("Mais ils sont où ???");
+}
