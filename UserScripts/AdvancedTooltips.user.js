@@ -840,7 +840,8 @@ var img = {
     99:'plague',
     107:'katana',
     108:'broadsword',
-    110:'antidote'
+    110:'antidote',
+    109:'axe'
 };
 
 // Créé le contenu du tooltip leek
@@ -1136,76 +1137,6 @@ function fill_report(tooltip, target, $data) {
 		+ ' tours</div>'
 
 	tooltip.appendChild(duration);
-
-	var result = "";
-
-	var winners;
-	var losers;
-	var nbleeks = $data.fight.report.leeks1.length + $data.fight.report.leeks2.length;
-
-	if ($data.fight.type == 'solo') {
-		var winData = $data.fight.report.leeks1;
-		var loseData = $data.fight.report.leeks2;
-		if ($data.fight.report.win == 2) {
-			winData = $data.fight.report.leeks2;
-			loseData = $data.fight.report.leeks1;
-		}
-		winners = buildSoloReport(winData, $data.fight.report.bonus, $data.fight.report.ai_times,
-            $data.fight.data.leeks);
-		losers = buildSoloReport(loseData, $data.fight.report.bonus, $data.fight.report.ai_times,
-         $data.fight.data.leeks);
-	} else if ($data.fight.type == 'farmer') {
-		var winData = $data.fight.report.leeks1;
-		var winFarmerData = $data.fight.report.farmer1;
-		var loseData = $data.fight.report.leeks2;
-		var loseFarmerData = $data.fight.report.farmer2;
-		if ($data.fight.report.win == 2) {
-			winData = $data.fight.report.leeks2;
-			winFarmerData = $data.fight.report.farmer2;
-			loseData = $data.fight.report.leeks1;
-			loseFarmerData = $data.fight.report.farmer1;
-		}
-		winners = buildFarmerReport(winFarmerData, winData, $data.fight.report.bonus, $data.fight.report.ai_times,
-            $data.fight.data.leeks);
-		losers = buildFarmerReport(loseFarmerData, loseData, $data.fight.report.bonus, $data.fight.report.ai_times,
-            $data.fight.data.leeks);
-	}  else if ($data.fight.type == 'team') {
-		var winData = $data.fight.report.leeks1;
-		var winFarmerData = $data.fight.report.team1;
-		var loseData = $data.fight.report.leeks2;
-		var loseFarmerData = $data.fight.report.team2;
-		if ($data.fight.report.win == 2) {
-			winData = $data.fight.report.leeks2;
-			winFarmerData = $data.fight.report.team2;
-			loseData = $data.fight.report.leeks1;
-			loseFarmerData = $data.fight.report.team1;
-		}
-		winners = buildTeamReport(winFarmerData, winData, $data.fight.report.bonus, $data.fight.report.ai_times,
-            $data.fight.data.leeks);
-		losers = buildTeamReport(loseFarmerData, loseData, $data.fight.report.bonus, $data.fight.report.ai_times,
-            $data.fight.data.leeks);
-	}
-
-	// S'il y a trop de poireaux, on affiche les tableaux de chaque équipe côte à côte
-	if (nbleeks > 6) {
-		result += '<div class="teams_block">';
-		result += '<div class="team_table" style="white-space: nowrap; display: inline-block; margin-left: 2px; margin-right: 2px;">';
-		result += '<div style="text-align:center;font-weight:bold;" id="hover_win">Gagnants</div>';
-		result += winners;
-		result += '</div>';
-		result += '<div class="team_table" style="white-space: nowrap; display: inline-block; margin-left: 2px; margin-right: 2px;">';
-		result += '<div style="text-align:center;font-weight:bold;" id="hover_lose">Perdants</div>';
-		result += losers;
-		result += '</div>'
-		result += '</div>';
-	} else {
-		result += '<div style="text-align:center;font-weight:bold;" id="hover_win">Gagnants</div>';
-		result += winners;
-		result += '<div style="text-align:center;font-weight:bold;" id="hover_lose">Perdants</div>';
-		result += losers;
-	}
-
-	tooltip.innerHTML += result;
 }
 
 // Créé le contenu du tooltip farmer
@@ -1214,7 +1145,7 @@ function fill_farmer(tooltip, target, $data) {
 	var avatar = document.createElement('div');
 	avatar.className = 'AT_avatar';
 	avatar.innerHTML = '<a title="Éleveur" href="https://leekwars.com/farmer/' + target.id
-		+ '"><img src="https://leekwars.com/static//image/avatar/' + $data.farmer.id + '"></a>';
+		+ '"><img src="https://leekwars.com/static/image//avatar/' + $data.farmer.id + '.png"></a>';
 	tooltip.appendChild(avatar);
 
 	// Ajout du nom de l'éleveur
